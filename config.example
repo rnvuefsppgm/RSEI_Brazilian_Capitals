@@ -1,4 +1,7 @@
 # Copy to .env or export in your shell before running the Earth Engine scripts
 EE_PROJECT=your-google-cloud-project-id
+# Folders with the annual RSEI images (comma-separated) and with the trend products
+RSEI_ASSET_ROOTS=projects/your-google-cloud-project-id/assets/RSEI_Bands_2026_new_new
+TREND_ROOT=projects/your-google-cloud-project-id/assets/RSEI_TRENDS_2026_oriented
 # Optional: path to the IBGE capital boundaries shapefile (default: data/boundaries/Capitais.shp)
 CAPITAIS_SHP=data/boundaries/Capitais.shp
