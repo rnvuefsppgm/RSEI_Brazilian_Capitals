@@ -1,0 +1,12 @@
+earthengine-api>=1.0
+geemap
+numpy
+pandas
+scipy
+pymannkendall
+rasterio
+geopandas
+matplotlib
+python-docx
+lxml
+openpyxl

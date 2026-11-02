@@ -1,0 +1,4 @@
+# Copy to .env or export in your shell before running the Earth Engine scripts
+EE_PROJECT=your-google-cloud-project-id
+# Optional: path to the IBGE capital boundaries shapefile (default: data/boundaries/Capitais.shp)
+CAPITAIS_SHP=data/boundaries/Capitais.shp

@@ -1,0 +1,28 @@
+asset,municipio,area_km2,scale_m
+trend_aracaju,Aracaju,2142.9115308891824,30
+trend_belem,Belém,8315.869379116712,50
+trend_belo_horizonte,Belo Horizonte,9732.46743037791,50
+trend_boa_vista,Boa Vista,39065.373939129146,100
+trend_brasilia,Brasília,24381.450537746805,80
+trend_campo_grande,Campo Grande,53427.853859675735,120
+trend_cuiaba,Cuiabá,79590.20113744955,150
+trend_curitiba,Curitiba,14473.960542057739,70
+trend_florianopolis,Florianópolis,6343.85458657586,40
+trend_fortaleza,Fortaleza,4801.179799682363,40
+trend_goiania,Goiânia,9452.76711964513,50
+trend_joao_pessoa,João Pessoa,2332.5605986004707,30
+trend_macapa,Macapá,63903.35778773656,130
+trend_maceio,Maceió,3186.6242592147755,30
+trend_manaus,Manaus,74031.57583389606,140
+trend_natal,Natal,3841.406850155943,40
+trend_palmas,Palmas,37063.002140840035,100
+trend_porto_alegre,Porto Alegre,17342.973447830496,70
+trend_porto_velho,Porto Velho,241787.2317817282,250
+trend_recife,Recife,2011.9558565541724,30
+trend_rio_branco,Rio Branco,54517.92428983364,120
+trend_rio_de_janeiro,Rio de Janeiro,11057.913057233263,60
+trend_salvador,Salvador,2501.6993032039904,30
+trend_sao_luis,São Luís,5926.316476780425,40
+trend_sao_paulo,São Paulo,13323.881029936962,60
+trend_teresina,Teresina,30673.312256839094,90
+trend_vitoria,Vitória,3989.311029381471,40

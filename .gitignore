@@ -1,0 +1,18 @@
+# credentials and private configuration
+*.json
+!data/**/*.json
+credentials*
+.config/
+*.pem
+*.key
+config.py
+.env
+# python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+# large intermediate files
+*_pixel_samples.csv
+trend_rasters/
+*.ovr
+*.aux.xml
