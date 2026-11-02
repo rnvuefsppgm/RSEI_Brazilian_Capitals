@@ -1,0 +1,62 @@
+cff-version: 1.2.0
+message: >-
+  If you use this code or the derived data products, please cite the
+  manuscript below (preferred) and this repository.
+type: software
+title: >-
+  RSEI_Brazilian_Capitals: Earth Engine processing, trend and sensitivity
+  scripts for the Remote Sensing Ecological Index in the 27 Brazilian state
+  capitals (1985-2025)
+authors:
+  - family-names: Lima
+    given-names: Luana Brito
+    affiliation: >-
+      Postgraduate Program in Earth Modeling and Environmental Sciences (PPGM),
+      State University of Feira de Santana (UEFS), Brazil
+  - family-names: Vasconcelos
+    given-names: Rodrigo N.
+    affiliation: >-
+      Postgraduate Program in Earth Modeling and Environmental Sciences (PPGM),
+      State University of Feira de Santana (UEFS), Brazil
+  - family-names: Cebrian
+    given-names: Francisco
+    affiliation: >-
+      Facultad de Humanidades de Albacete, Universidad de Castilla-La Mancha
+      (UCLM), Spain
+  - family-names: Santana
+    given-names: Mariana M. M.
+    affiliation: >-
+      Department of Forest Engineering, State University of Amapa (UEAP), Brazil
+  - family-names: Franca Rocha
+    given-names: Washington de Jesus Sant'Anna da
+    affiliation: >-
+      Postgraduate Program in Earth Modeling and Environmental Sciences (PPGM),
+      State University of Feira de Santana (UEFS), Brazil
+repository-code: https://github.com/rnvuefsppgm/RSEI_Brazilian_Capitals
+license: MIT
+keywords:
+  - Remote Sensing Ecological Index
+  - urban ecological quality
+  - Mann-Kendall trend analysis
+  - Google Earth Engine
+  - land surface temperature
+  - Brazilian state capitals
+preferred-citation:
+  type: article
+  title: >-
+    Spatiotemporal dynamics of urban ecological quality based on the Remote
+    Sensing Ecological Index (RSEI) in the Brazilian state capitals (1985-2025)
+  authors:
+    - family-names: Lima
+      given-names: Luana Brito
+    - family-names: Vasconcelos
+      given-names: Rodrigo N.
+    - family-names: Cebrian
+      given-names: Francisco
+    - family-names: Santana
+      given-names: Mariana M. M.
+    - family-names: Franca Rocha
+      given-names: Washington de Jesus Sant'Anna da
+  journal: Urban Ecosystems
+  year: 2026
+  notes: Manuscript under review; volume, pages and DOI to be added upon publication.

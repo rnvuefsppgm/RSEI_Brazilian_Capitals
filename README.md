@@ -100,4 +100,18 @@ rasterio, geopandas, matplotlib, python-docx, lxml, openpyxl). QGIS 3.28 was use
   (`data/results_tables/scale_used.csv`); all area statistics were computed at 30 m.
 
 ## 10. Licence and citation
-Code under the MIT licence (see `LICENSE`). Please cite the manuscript when using this code or the derived products.
+* **Code** (scripts, notebooks, modules): MIT licence (see `LICENSE`).
+* **Data and derived products** (`data/results_tables/`, `data/trend_products_clipped/`, tables and figures):
+  Creative Commons Attribution 4.0 International, CC BY 4.0 (see `LICENSE-DATA`). They are free to use, share and
+  adapt for any purpose, provided that the source is cited.
+* **Third-party inputs** keep their own terms: Landsat Collection 2 composites (USGS, public domain) and the municipal
+  boundaries (IBGE, open data with attribution).
+
+Please cite the manuscript when using this code or the derived products (citation metadata in `CITATION.cff`;
+GitHub shows it under "Cite this repository"):
+
+> Lima LB, Vasconcelos RN, Cebrian F, Santana MMM, Franca Rocha WJSA (2026) Spatiotemporal dynamics of urban
+> ecological quality based on the Remote Sensing Ecological Index (RSEI) in the Brazilian state capitals (1985–2025).
+> Urban Ecosystems (under review). Code and data: https://github.com/rnvuefsppgm/RSEI_Brazilian_Capitals
+
+A versioned archive of the repository with a DOI will be deposited in Zenodo upon acceptance.
