@@ -15,6 +15,7 @@ import ee
 from concurrent.futures import ThreadPoolExecutor
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'common'))
 import gee_init_and_rsei_assets as C
+import municipal_boundaries as MG
 
 OUT = 'out_S2_orientation_check.csv'
 SCALE = 120  # coarser than 30 m only to keep the 1,100+ correlations affordable
@@ -30,10 +31,20 @@ if os.path.exists(OUT):
             rows.append(r)
             done.add(r['asset'])
 
-def one(aid):
+GEOMS = None
+
+
+def one(aid, bounds=False):
     img = ee.Image(aid)
     y = ee.Number.parse(ee.String(img.get('ANO')))
     region = img.geometry()
+    if bounds:
+        # Fallback for very large municipalities (e.g. Porto Velho), whose image footprint geometry exceeds
+        # the request size limit: the correlation is computed within the official municipal boundary instead.
+        global GEOMS
+        if GEOMS is None:
+            GEOMS = MG.ee_geometries()
+        region = GEOMS[img.get('NM_MUN').getInfo()]
     start = ee.Date.fromYMD(y, 1, 1)
     annual = IC.filterDate(start, start.advance(1, 'year')).median().clip(region)
     ndvi = annual.normalizedDifference(['nir', 'red']).rename('NDVI')
@@ -45,6 +56,8 @@ def one(aid):
         d = ee.Dictionary({'NM_MUN': img.get('NM_MUN'), 'ANO': y, 'r_RSEI_NDVI': r1.get('correlation'),
                            'r_RSEI_LST': r2.get('correlation')}).getInfo()
     except Exception as e:
+        if not bounds and 'too large' in str(e):
+            return one(aid, bounds=True)
         print(aid, 'ERROR', str(e)[:100], flush=True)
         return None
     d['asset'] = aid
@@ -59,7 +72,7 @@ def dump():
 
 
 todo = [a for a in sorted(ids) if a not in done]
-with ThreadPoolExecutor(max_workers=3) as ex:
+with ThreadPoolExecutor(max_workers=1) as ex:
     for i, d in enumerate(ex.map(one, todo), 1):
         if d:
             rows.append(d)
