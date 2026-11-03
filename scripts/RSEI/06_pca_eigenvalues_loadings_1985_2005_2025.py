@@ -31,7 +31,7 @@ done = set()
 if os.path.exists('out_S4_pca_loadings.csv'):
     with open('out_S4_pca_loadings.csv', encoding='utf-8') as fh:
         for r in csv.DictReader(fh):
-            if r['eig1']:
+            if r['eig1'] and int(r['ANO']) in YEARS:
                 rows.append(r)
                 done.add((r['NM_MUN'], int(r['ANO'])))
 
