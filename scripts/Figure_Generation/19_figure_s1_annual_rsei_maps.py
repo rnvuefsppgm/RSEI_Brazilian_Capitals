@@ -118,10 +118,49 @@ flag_years = {}
 for f in info:
     if f['properties']['id'] in flagged:
         flag_years.setdefault(f['properties']['mun'], set()).add(int(f['properties']['ano']))
+
+
+def read_map(mun, ano):
+    """Annual map, or None when absent or without any valid observation (constant image, i.e. entirely
+    filled with the polygon mean during gap filling; see Table S1)."""
+    path = os.path.join(RDIR, f'{slug(mun)}_{ano}.tif')
+    if not os.path.exists(path):
+        return None
+    with rasterio.open(path) as src:
+        a = src.read(1).astype('float32')
+        if src.nodata is not None:
+            a[a == src.nodata] = np.nan
+        b = src.bounds
+    a[~np.isfinite(a)] = np.nan
+    v = a[np.isfinite(a)]
+    if v.size == 0 or np.nanstd(v) < 1e-3:
+        return None
+    return a, [b.left, b.right, b.bottom, b.top]
+
+
+def nearest_map(mun, ano):
+    """Nearest year with a valid map (the earlier year when two are equally close)."""
+    for d in range(1, 41):
+        for y in (ano - d, ano + d):
+            if 1985 <= y <= 2025:
+                m = read_map(mun, y)
+                if m is not None:
+                    return y, m
+    return None, None
+
+
+# pages without substitutions are reused when REUSE_PAGES=1 (only the pages that need a substitute are redrawn)
+REUSE = os.environ.get('REUSE_PAGES') == '1'
+substituted = {}
 pages = []
 for _, row in gdf.sort_values('NM_MUN').iterrows():
     mun, uf = row.NM_MUN, row.SIGLA_UF
     fl = flag_years.get(mun, set())
+    gaps = [y for y in range(1985, 2026) if read_map(mun, y) is None]
+    png = os.path.join(OUT, f'Figure_S1_{slug(mun)}.png')
+    if REUSE and not gaps and os.path.exists(png):
+        pages.append((mun, uf, png))
+        continue
     H = 21.0
     fig = plt.figure(figsize=(WIDTH_CM * CM, H * CM))
     cols, rows, gap, top, bottom = 7, 6, 0.1, 1.0, 0.3
@@ -132,15 +171,12 @@ for _, row in gdf.sort_values('NM_MUN').iterrows():
         r_, c_ = divmod(k, cols)
         ax = fig.add_axes([(0.1 + c_ * (pw + gap)) / WIDTH_CM, (H - top - (r_ + 1) * ph - r_ * 0.8) / H,
                            pw / WIDTH_CM, ph / H])
-        path = os.path.join(RDIR, f'{slug(mun)}_{ano}.tif')
-        if os.path.exists(path):
-            with rasterio.open(path) as src:
-                a = src.read(1).astype('float32')
-                if src.nodata is not None:
-                    a[a == src.nodata] = np.nan
-                a[~np.isfinite(a)] = np.nan
-                b = src.bounds
-            ext = [b.left, b.right, b.bottom, b.top]
+        m, shown = read_map(mun, ano), ano
+        if m is None:
+            shown, m = nearest_map(mun, ano)
+            substituted.setdefault(mun, []).append((ano, shown))
+        if m is not None:
+            a, ext = m
             ax.imshow(a, extent=ext, cmap='RdYlGn', vmin=0, vmax=1, interpolation='nearest')
             set_geo_aspect(ax, ext)
             if ext0 is None:
@@ -148,7 +184,10 @@ for _, row in gdf.sort_values('NM_MUN').iterrows():
                 add_scale_bar(ax, ext, fontsize=6)
         else:
             ax.text(0.5, 0.5, 'no image', ha='center', va='center', fontsize=FS_SMALL, transform=ax.transAxes)
-        ax.set_title(f'{ano}*' if ano in fl else str(ano), fontsize=FS_SMALL, pad=2)
+        lab = f'{ano}*' if ano in fl else str(ano)
+        if shown != ano:
+            lab = f'{lab}† ({shown})'
+        ax.set_title(lab, fontsize=FS_SMALL, pad=2)
         ax.set_xticks([]); ax.set_yticks([])
         for s_ in ax.spines.values():
             s_.set_visible(False)
@@ -161,7 +200,6 @@ for _, row in gdf.sort_values('NM_MUN').iterrows():
     cb.outline.set_linewidth(0.4)
     fig.text(0.1 / WIDTH_CM, (H - 0.25) / H, f'Figure S1 ({mun}, {uf}). Annual RSEI, 1985–2025', fontsize=FS + 1,
              fontweight='bold', va='top')
-    png = os.path.join(OUT, f'Figure_S1_{slug(mun)}.png')
     fig.savefig(png, dpi=300)
     plt.close(fig)
     pages.append((mun, uf, png))
@@ -179,10 +217,14 @@ D.add_paragraph('Figure S1. Annual maps of the Remote Sensing Ecological Index (
                 '1985–2025, within the official municipal boundaries (IBGE). Values range from 0 (lowest ecological quality '
                 'in the capital-year) to 1 (highest). Capital-year images in which the first principal component was inverted '
                 'were re-oriented before mapping and are marked with an asterisk (Table S3). Maps are ordered alphabetically by '
-                'capital; the oceanic islands of Trindade and Martim Vaz (Vitória) are not shown. The rendering scale is '
+                'capital; the oceanic islands of Trindade and Martim Vaz (Vitória) are not shown. Years marked with a dagger had no '
+                'valid Landsat observation within the municipality (the annual image was entirely filled with the mean of the '
+                'processing polygon; Table S1): the map of the nearest year with valid data, given in parentheses, is shown for '
+                'visual continuity only, whereas the trend analysis used the filled values. The rendering scale is '
                 '30 m for small municipalities and up to 100 m or coarser for the largest ones.')
 for mun, uf, png in pages:
     D.add_page_break()
     D.add_picture(png, width=Cm(17.4))
 D.save(os.path.join(OUT, 'Supplementary_Material_S1.docx'))
+print('substituted:', substituted)
 print('done')
