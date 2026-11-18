@@ -14,6 +14,8 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import docx
+import docx.oxml
+import docx.oxml.ns
 from docx.shared import Pt
 
 NFR, OUT = sys.argv[1], sys.argv[2]
@@ -139,19 +141,22 @@ D.add_paragraph('Spatiotemporal dynamics of urban ecological quality based on th
 for k, v in tabs.items():
     if caps.get(k):
         D.add_paragraph(caps[k])
-    if len(v) > 300:
-        D.add_paragraph(f'({len(v)} rows; the complete table is provided in the Excel file Tables_S1_S6.xlsx, sheet {k}. '
-                        f'Only the rows flagged as re-oriented are listed below.)')
-        v = v[v['Re-oriented'] == 'yes'] if 'Re-oriented' in v.columns else v.head(50)
+    if len(v) > 300:   # long tables are listed in full; the header row repeats on every page
+        D.add_paragraph(f'({len(v):,} rows; also provided in the Excel file Tables_S1_S6.xlsx, sheet {k.replace(" ", "_")}.)')
     tb = D.add_table(rows=1, cols=len(v.columns))
     tb.style = 'Table Grid'
     for i, c in enumerate(v.columns):
         tb.rows[0].cells[i].text = str(c)
+    trpr = tb.rows[0]._tr.get_or_add_trPr()
+    hdr = docx.oxml.OxmlElement('w:tblHeader')
+    hdr.set(docx.oxml.ns.qn('w:val'), 'true')
+    trpr.append(hdr)
     for _, row in v.iterrows():
         cells = tb.add_row().cells
         for i, c in enumerate(v.columns):
             x = row[c]
-            cells[i].text = '' if pd.isna(x) else (f'{x:.4g}' if isinstance(x, float) else str(x))
+            cells[i].text = '' if pd.isna(x) else (f'{round(x):,}' if isinstance(x, (int, float)) and abs(x) >= 1000
+                                                 else f'{x:.4g}' if isinstance(x, float) else str(x))
     D.add_paragraph('')
 D.add_paragraph('Figure S2. Annual municipal mean RSEI (1985–2025) of the 27 Brazilian state capitals, computed within the official '
                 'municipal boundaries, with the Sen\'s slope line (dashed). Above each panel: Sen\'s slope (RSEI units per year) and '
