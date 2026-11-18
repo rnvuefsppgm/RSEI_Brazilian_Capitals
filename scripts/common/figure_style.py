@@ -33,14 +33,15 @@ plt.rcParams.update({
     'savefig.dpi': 600,
 })
 
-# Capitals per figure (alphabetical; five figures of at most six rows)
-FIG_GROUPS = {
-    3: ['Aracaju', 'Belém', 'Belo Horizonte', 'Boa Vista', 'Brasília', 'Campo Grande'],
-    4: ['Cuiabá', 'Curitiba', 'Florianópolis', 'Fortaleza', 'Goiânia', 'João Pessoa'],
-    5: ['Macapá', 'Maceió', 'Manaus', 'Natal', 'Palmas'],
-    6: ['Porto Alegre', 'Porto Velho', 'Recife', 'Rio Branco', 'Rio de Janeiro'],
-    7: ['Salvador', 'São Luís', 'São Paulo', 'Teresina', 'Vitória'],
-}
+# Landscape artwork for the capital maps (rotated on the page): 23.4 x 16.0 cm, three capitals per figure
+LANDSCAPE_W_CM, LANDSCAPE_H_CM = 23.4, 16.0
+
+# Capitals per figure (alphabetical; nine landscape figures of three rows)
+_CAPS = ['Aracaju', 'Belém', 'Belo Horizonte', 'Boa Vista', 'Brasília', 'Campo Grande', 'Cuiabá', 'Curitiba',
+         'Florianópolis', 'Fortaleza', 'Goiânia', 'João Pessoa', 'Macapá', 'Maceió', 'Manaus', 'Natal', 'Palmas',
+         'Porto Alegre', 'Porto Velho', 'Recife', 'Rio Branco', 'Rio de Janeiro', 'Salvador', 'São Luís', 'São Paulo',
+         'Teresina', 'Vitória']
+FIG_GROUPS = {3 + k: _CAPS[3 * k:3 * k + 3] for k in range(9)}
 CITY_FIGURE = {c: f for f, cs in FIG_GROUPS.items() for c in cs}
 
 # Trend classes (diverging red-green), not significant in neutral grey, continuous RSEI
@@ -63,21 +64,28 @@ def nice_bar_km(span_km):
     return 0.5
 
 
-def add_scale_bar(ax, ext, fontsize=FS_SMALL):
-    """Scale bar in the lower-left corner of a geographic (EPSG:4326) panel."""
-    x0, x1, y0, y1 = ext
-    lat = (y0 + y1) / 2
+def add_scale_bar(ax, ext, fontsize=FS_SMALL, below=True):
+    """Scale bar for a geographic (EPSG:4326) panel. With below=True it is drawn under the panel, outside
+    the map, so that it never covers mapped pixels (call after the axis limits and aspect are final)."""
+    ax.apply_aspect()
+    x0, x1 = ax.get_xlim()
+    y0, y1 = ax.get_ylim()
+    lat = (ext[2] + ext[3]) / 2
     km_deg = 111.32 * np.cos(np.radians(lat))
-    bar = nice_bar_km((x1 - x0) * km_deg)
-    bx = x0 + 0.04 * (x1 - x0)
-    by = y0 + 0.04 * (y1 - y0)
-    halo = [pe.withStroke(linewidth=2.2, foreground='white')]
-    ax.plot([bx, bx + bar / km_deg], [by, by], color='black', lw=1.4, solid_capstyle='butt', zorder=5,
-            path_effects=halo)
-    ax.text(bx, by + 0.025 * (y1 - y0), f'{bar:g} km', fontsize=fontsize, va='bottom', ha='left', zorder=5,
-            path_effects=halo)
+    bar = nice_bar_km((ext[1] - ext[0]) * km_deg)
+    frac = bar / km_deg / (x1 - x0)
+    # anchored to the lower-left corner of the mapped extent (ext), just below it
+    xl = max(0.0, (ext[0] - x0) / (x1 - x0)) + 0.02
+    yb = max(0.0, (ext[2] - y0) / (y1 - y0))
+    y = yb - 0.05 if below else yb + 0.04
+    ax.plot([xl, xl + frac], [y, y], color='black', lw=1.4, solid_capstyle='butt', transform=ax.transAxes,
+            clip_on=False)
+    for xx in (xl, xl + frac):
+        ax.plot([xx, xx], [y - 0.02, y + 0.02], color='black', lw=0.6, transform=ax.transAxes, clip_on=False)
+    ax.text(xl + 0.03 + frac, y, f'{bar:g} km', fontsize=fontsize, va='center', ha='left', transform=ax.transAxes,
+            clip_on=False)
 
 
 def set_geo_aspect(ax, ext):
     lat = (ext[2] + ext[3]) / 2
-    ax.set_aspect(1 / np.cos(np.radians(lat)))
+    ax.set_aspect(1 / np.cos(np.radians(lat)), adjustable='datalim')

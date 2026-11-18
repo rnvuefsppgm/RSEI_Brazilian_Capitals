@@ -38,7 +38,7 @@ boundaries (`data/boundaries/Capitais.shp`, IBGE 2022 municipal mesh).
 7. **Area accounting, sensitivity analyses and figures** (scripts 06–19): municipal shares of significant degradation /
    no significant trend / significant improvement (Table 1); municipal annual series (Table S2, Figure S2); PCA loadings
    (Table S4); Hamed–Rao and tie corrections on 1,000 random pixels per capital (Table S5); demographic associations
-   (Table S6); Figures 1, 3–7 and S1.
+   (Table S6); Figures 1, 3–11 and S1.
 
 ## 5. Script index
 Scripts are numbered in execution order. The last column gives the short code used for each analysis in the response
@@ -61,7 +61,7 @@ letters to the reviewers.
 | 13 | `scripts/Trend_Analysis/13_spearman_trends_vs_demographic_indicators.py` | Downloads IBGE/SIDRA demographic indicators and computes Spearman correlations with the trend shares (Table S6) | S6 |
 | 14 | `scripts/Validation/14_check_exported_rasters_epoch_consistency.py` | Consistency check of locally exported rasters across epochs | L1 |
 | 15 | `scripts/Figure_Generation/15_figure1_workflow_diagram.py` | Figure 1 (methodological workflow) | F0 |
-| 16 | `scripts/Figure_Generation/16_figures3_to_7_trend_maps.py` | Figures 3–7 (tau, significant trend, mean, median and SD maps of the 27 capitals; 17.4 cm print width) | F1 |
+| 16 | `scripts/Figure_Generation/16_figures3_to_11_trend_maps.py` | Figures 3–11 (tau, significant trend, mean, median and SD maps of the 27 capitals; nine landscape figures) | F1 |
 | 17 | `scripts/Figure_Generation/17_export_figures_png600_svg.py` | Exports the figures as 600 dpi PNG and editable SVG | F2 |
 | 18 | `scripts/Figure_Generation/18_supplementary_tables_s1_s6_and_figure_s2.py` | Tables S1–S6 (xlsx/docx) and Figure S2 from the CSV outputs | FS |
 | 19 | `scripts/Figure_Generation/19_figure_s1_annual_rsei_maps.py` | Figure S1: annual RSEI maps of every capital (re-oriented images) | FS1 |
@@ -83,7 +83,7 @@ scripts/common/             shared modules imported by scripts 05–19
 scripts/RSEI/               PC1 orientation check and PCA loadings (05–06)
 scripts/Trend_Analysis/     completeness, trend sensitivity, corrected trends, Table 1, demographic association (07–10, 12–13)
 scripts/Validation/         local consistency checks on exported rasters (14)
-scripts/Figure_Generation/  raster download, Figures 1, 3–7, S1, S2 and supplementary tables (11, 15–19)
+scripts/Figure_Generation/  raster download, Figures 1, 3–11, S1, S2 and supplementary tables (11, 15–19)
 scripts/Python/             notebook sanitisation utility
 scripts/GEE/                note on the Earth Engine implementation (Python API, no JavaScript scripts)
 scripts/R/                  note (no R code was used for the published results)
@@ -123,7 +123,7 @@ rasterio, geopandas, matplotlib, python-docx, lxml, openpyxl). QGIS 3.28 was use
 | `out_S3b_*.csv` | 08–09 | Table S5, Section 3.8 |
 | `out_S6_*.csv` | 13 | Table S6, Sections 3.8 and 4.7 |
 | `Figure_1.png/svg` | 15 | Figure 1 |
-| `Figure_3..7.png/svg` | 16 (+11) | Figures 3–7 |
+| `Figure_3..11.png/svg` | 16 (+11) | Figures 3–11 |
 | `Figure_S1`, `Figure_S2`, `Tables_S1_S6` | 19, 18 | Supplementary material |
 
 The CSV file names keep the analysis codes of the response letters (S1–S6). Asset identifiers inside the tables are
@@ -134,7 +134,7 @@ written with the `YOUR_PROJECT` placeholder.
   reproducing them from scratch requires running the processing scripts (several hours of batch exports) with your own
   assets. The clipped trend products are distributed in `data/trend_products_clipped/`.
 * `LANDSAT/COMPOSITES/C02/T1_L2_32DAY` is maintained by Google/USGS; reprocessing of the composites may change values slightly.
-* Figures 3–7 are rendered at 30 m for municipalities up to ~4,000 km² and at 40–150 m for larger municipalities
+* Figures 3–11 are rendered at 30 m for municipalities up to ~4,000 km² and at 40–150 m for larger municipalities
   (`data/results_tables/scale_used.csv`); all area statistics were computed at 30 m.
 
 ## 11. Licence and citation

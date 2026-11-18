@@ -126,11 +126,11 @@ for _, row in gdf.sort_values('NM_MUN').iterrows():
     fig = plt.figure(figsize=(WIDTH_CM * CM, H * CM))
     cols, rows, gap, top, bottom = 7, 6, 0.1, 1.0, 0.3
     pw = (WIDTH_CM - 0.2 - (cols - 1) * gap) / cols
-    ph = (H - top - bottom - (rows - 1) * 0.45) / rows
+    ph = (H - top - bottom - (rows - 1) * 0.8) / rows
     ext0 = None
     for k, ano in enumerate(range(1985, 2026)):
         r_, c_ = divmod(k, cols)
-        ax = fig.add_axes([(0.1 + c_ * (pw + gap)) / WIDTH_CM, (H - top - (r_ + 1) * ph - r_ * 0.45) / H,
+        ax = fig.add_axes([(0.1 + c_ * (pw + gap)) / WIDTH_CM, (H - top - (r_ + 1) * ph - r_ * 0.8) / H,
                            pw / WIDTH_CM, ph / H])
         path = os.path.join(RDIR, f'{slug(mun)}_{ano}.tif')
         if os.path.exists(path):
@@ -153,7 +153,7 @@ for _, row in gdf.sort_values('NM_MUN').iterrows():
         for s_ in ax.spines.values():
             s_.set_visible(False)
     r_, c_ = divmod(41, cols)
-    cax = fig.add_axes([(0.1 + c_ * (pw + gap) + 0.15 * pw) / WIDTH_CM, (H - top - (r_ + 1) * ph - r_ * 0.45 + 0.4 * ph) / H,
+    cax = fig.add_axes([(0.1 + c_ * (pw + gap) + 0.15 * pw) / WIDTH_CM, (H - top - (r_ + 1) * ph - r_ * 0.8 + 0.4 * ph) / H,
                         0.7 * pw / WIDTH_CM, 0.12 * ph / H])
     sm = plt.cm.ScalarMappable(cmap='RdYlGn', norm=plt.Normalize(0, 1))
     cb = fig.colorbar(sm, cax=cax, orientation='horizontal', ticks=[0, 0.5, 1])
