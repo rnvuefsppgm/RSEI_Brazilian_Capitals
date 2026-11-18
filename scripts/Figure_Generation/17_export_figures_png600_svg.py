@@ -5,7 +5,7 @@ Figure packaging. New for Review (2026).
     produced in QGIS), writes a PNG with 600 dpi metadata (pixel content unchanged)
     and an SVG wrapper embedding the raster (vector container; the raster content
     itself is not editable).
-(b) Copies the regenerated figures (Figures 1 and 3-6) into the PNG_600dpi and
+(b) Copies the regenerated figures (Figures 1 and 3-7) into the PNG_600dpi and
     SVG_Editable folders.
 Usage: python 17_export_figures_png600_svg.py <original_dir> <work_dir> <png_dir> <svg_dir>
 """
@@ -32,7 +32,7 @@ for name in ['Figure_2']:
     open(os.path.join(svg_dir, name + '.svg'), 'w', encoding='utf-8').write(svg)
     print(name, 'wrapped', w, h)
 
-for name in ['Figure_1', 'Figure_3', 'Figure_4', 'Figure_5', 'Figure_6']:
+for name in ['Figure_1', 'Figure_3', 'Figure_4', 'Figure_5', 'Figure_6', 'Figure_7']:
     for ext, dst in (('.png', png_dir), ('.svg', svg_dir)):
         p = os.path.join(work, name + ext)
         if os.path.exists(p):

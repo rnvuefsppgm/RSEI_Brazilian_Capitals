@@ -10,6 +10,8 @@ import os
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'common'))
+import figure_style  # noqa: F401  (Arial, print-size lettering)
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else 'figures_out'
@@ -18,12 +20,12 @@ plt.rcParams['svg.fonttype'] = 'none'
 plt.rcParams['font.family'] = 'DejaVu Sans'
 
 boxes = [
-    ('1. Data acquisition (GEE)', 'Landsat Collection 2 Level-2 32-day composites\n(TM, ETM+, OLI/TIRS; USGS cloud-masked)\nAnnual median composite, 1985-2025 (41 years)', '#e8f1fa'),
-    ('2. RSEI components', 'NDVI (greenness) | WET (Tasseled Cap wetness,\nTM coefficients <= 2012, OLI coefficients >= 2013)\nLST (surface temperature, K to °C) | NDBSI = (IBI + SI)/2', '#e8f1fa'),
-    ('3. Normalisation and PCA (per capital, per year)', 'Min-max scaling to 0-1 (LST and NDBSI inverted)\nCovariance PCA over the processing polygon\nRSEI = rescaled (1 - PC1); spatial gap filling', '#e8f1fa'),
+    ('1. Data acquisition (GEE)', 'Landsat Collection 2 Level-2 32-day composites\n(TM, ETM+, OLI/TIRS; USGS cloud-masked)\nAnnual median composite, 1985–2025 (41 years)', '#e8f1fa'),
+    ('2. RSEI components', 'NDVI (greenness) | WET (Tasseled Cap wetness,\nTM coefficients ≤ 2012, OLI coefficients ≥ 2013)\nLST (surface temperature, K to °C) | NDBSI = (IBI + SI)/2', '#e8f1fa'),
+    ('3. Normalisation and PCA (per capital, per year)', 'Min–max scaling to 0-1 (LST and NDBSI inverted)\nCovariance PCA over the processing polygon\nRSEI = rescaled (1 - PC1); spatial gap filling', '#e8f1fa'),
     ('4. Annual RSEI assets', '27 capitals x 41 years = 1,107 images (30 m)\nMissing years re-processed; completeness audit', '#fdf2e0'),
-    ('5. Pixel-wise trend analysis (GEE)', "Mann-Kendall S, Var(S), Z, p (two-tailed), Kendall's tau\nSen's slope and intercept; temporal mean, median, SD", '#fdf2e0'),
-    ('6. Municipal clipping and cartography (QGIS / Python)', 'Clip to IBGE municipal boundaries\nTrend classes (sign of tau; p <= 0.05) and area shares (Table 1)\nMaps (Figures 3-6); supplementary sensitivity analyses', '#eaf5e6'),
+    ('5. Pixel-wise trend analysis (GEE)', "Mann–Kendall S, Var(S), Z, p (two-tailed), Kendall's tau\nSen's slope and intercept; temporal mean, median, SD", '#fdf2e0'),
+    ('6. Municipal clipping and cartography (QGIS / Python)', 'Clip to IBGE municipal boundaries\nTrend classes (sign of Kendall’s τ; p ≤ 0.05) and area shares (Table 1)\nMaps (Figures 3–7); supplementary sensitivity analyses', '#eaf5e6'),
 ]
 fig, ax = plt.subplots(figsize=(7.2, 8.6), dpi=100)
 ax.set_xlim(0, 10); ax.set_ylim(0, 10.2); ax.axis('off')

@@ -19,33 +19,39 @@ from docx.shared import Pt
 NFR, OUT = sys.argv[1], sys.argv[2]
 os.makedirs(OUT, exist_ok=True)
 plt.rcParams['svg.fonttype'] = 'none'
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'common'))
+from figure_style import CM, WIDTH_CM, FS, FS_SMALL  # Arial, print-size lettering
 R = lambda n: pd.read_csv(os.path.join(NFR, n))
 
 # ---------------- Figure S2 ----------------
 s1 = R('out_S1_city_annual_series.csv').sort_values(['NM_MUN', 'ANO'])
 cs = R('out_S3b_city_series_results.csv').set_index('NM_MUN') if os.path.exists(os.path.join(NFR, 'out_S3b_city_series_results.csv')) else None
-muns = sorted(s1.NM_MUN.unique())
-fig, axes = plt.subplots(7, 4, figsize=(13, 16), dpi=100, sharex=True)
+import unicodedata
+muns = sorted(s1.NM_MUN.unique(), key=lambda m: unicodedata.normalize('NFKD', m).encode('ascii', 'ignore').decode())
+YLO = np.floor(s1.RSEI_mean.min() * 10) / 10
+fig, axes = plt.subplots(7, 4, figsize=(16.5 * CM, 23.0 * CM), sharex=True, sharey=True)
 axes = axes.ravel()
 for ax, m in zip(axes, muns):
     g = s1[s1.NM_MUN == m]
-    ax.plot(g.ANO, g.RSEI_mean, '-o', ms=2.2, lw=0.9, color='#1f77b4')
+    ax.plot(g.ANO, g.RSEI_mean, '-o', ms=1.6, lw=0.7, color='#1f77b4')
     if cs is not None and m in cs.index:
         sl = cs.loc[m, 'sen_slope']
         y0 = np.median(g.RSEI_mean.values - sl * (g.ANO.values - g.ANO.values[0]))
-        ax.plot(g.ANO, y0 + sl * (g.ANO - g.ANO.values[0]), '--', color='#d62728', lw=0.9)
+        ax.plot(g.ANO, y0 + sl * (g.ANO - g.ANO.values[0]), '--', color='#d62728', lw=0.8)
         p = cs.loc[m, 'p_hamed_rao']
-        ax.set_title(f"{m}  (Sen = {sl:+.4f}/yr, p(HR) = {p:.3f})", fontsize=8)
+        pt = "n/a" if not np.isfinite(p) else ("< 0.001" if p < 0.001 else f"= {p:.3f}")
+        ax.set_title(f"{m}\nSen {sl:+.4f}; p(HR) {pt}", fontsize=FS_SMALL, pad=2, linespacing=1.1)
     else:
-        ax.set_title(m, fontsize=8)
-    ax.set_ylim(0.3, 0.9)
-    ax.tick_params(labelsize=7)
+        ax.set_title(m, fontsize=FS_SMALL, pad=2)
+    ax.set_ylim(YLO, 0.9)
+    ax.tick_params(labelsize=6.5, width=0.4, length=2)
+    ax.set_xticks([1985, 2005, 2025])
     ax.grid(alpha=0.3, lw=0.4)
 for ax in axes[len(muns):]:
     ax.axis('off')
-fig.supylabel('Municipal mean RSEI', fontsize=10)
-fig.supxlabel('Year', fontsize=10)
-plt.tight_layout()
+fig.supylabel('Municipal mean RSEI', fontsize=FS)
+fig.supxlabel('Year', fontsize=FS)
+plt.tight_layout(pad=0.4, h_pad=0.6, w_pad=0.4, rect=(0.025, 0.01, 1, 1))
 fig.savefig(os.path.join(OUT, 'Figure_S2.png'), dpi=600)
 fig.savefig(os.path.join(OUT, 'Figure_S2.svg'))
 plt.close(fig)
@@ -148,9 +154,10 @@ for k, v in tabs.items():
             cells[i].text = '' if pd.isna(x) else (f'{x:.4g}' if isinstance(x, float) else str(x))
     D.add_paragraph('')
 D.add_paragraph('Figure S2. Annual municipal mean RSEI (1985–2025) of the 27 Brazilian state capitals, computed within the official '
-                'municipal boundaries, with the Sen\'s slope line (dashed) and the p-value of the Hamed–Rao variance-corrected '
-                'Mann–Kendall test of the municipal series.')
-D.add_picture(os.path.join(OUT, 'Figure_S2.png'), width=docx.shared.Cm(16))
+                'municipal boundaries, with the Sen\'s slope line (dashed). Above each panel: Sen\'s slope (RSEI units per year) and '
+                'p-value of the Hamed–Rao variance-corrected Mann–Kendall test of the municipal series, p(HR); n/a, '
+                'variance correction not computable for that series.')
+D.add_picture(os.path.join(OUT, 'Figure_S2.png'), width=docx.shared.Cm(16.5))
 cp = D.core_properties
 cp.author = 'RNV'
 cp.last_modified_by = 'RNV'
